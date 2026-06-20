@@ -492,9 +492,9 @@ function submitContact() {
   const resultCards = [...document.querySelectorAll(".demo-title")].map(el => el.textContent).join(" / ");
 
   // 질문별 선택 답변 텍스트 변환
-  const envLabels  = ["Public Cloud (RISE with SAP)", "Private Cloud / On-Premise", "잘 모르겠어요"];
-  const fcmLabels  = ["관심 있어요", "관심 없어요"];
-  const scmLabels  = ["관심 있어요", "관심 없어요"];
+  const envLabels = ["Public Cloud (RISE with SAP)", "Private Cloud / On-Premise", "잘 모르겠어요"];
+  const fcmLabels = ["관심 있어요", "관심 없어요"];
+  const scmLabels = ["관심 있어요", "관심 없어요"];
   const q1 = envLabels[ans[0]] ?? "-";
   const q2 = fcmLabels[ans[1]] ?? "-";
   const q3 = scmLabels[ans[2]] ?? "-";
