@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAP Business AI 부스 큐레이션</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/tabler-icons.min.css">
+  <style>
+    :root {
+      --font: "72", Arial, Helvetica, sans-serif;
+      --purple:    #5B2FD4;
+      --purple2:   #7B52E8;
+      --purple3:   #A67FFF;
+      --purple-lt: rgba(91,47,212,.12);
+      --text:      #ffffff;
+      --text2:     rgba(255,255,255,.7);
+      --bg-card:   rgba(255,255,255,.12);
+      --bg-card2:  rgba(255,255,255,.08);
+      --bg-input:  rgba(255,255,255,.1);
+      --border:    rgba(255,255,255,.2);
+      --border2:   rgba(255,255,255,.12);
+      --r-lg: 14px;
+      --r-md: 8px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      background:linear-gradient(145deg,#3B1FA8 0%,#6B35D9 40%,#8B3FCC 70%,#5B2FD4 100%);
+      min-height:100vh;
+      display:flex;justify-content:center;align-items:center;
+      padding:2rem 1rem;
+      font-family:var(--font);
+    }
+    .frame{
+      background:rgba(255,255,255,.95);
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.6);
+      box-shadow:0 24px 64px rgba(0,0,0,.25);
+      width:100%;
+      max-width:460px;
+      overflow:hidden;
+    }
+    .scr{display:none}
+    .scr.on{display:block}
+
+    /* ── WELCOME ── */
+    .w-head{background:linear-gradient(155deg,#5B2FD4 0%,#7B52E8 60%,#5B2FD4 100%);padding:2.25rem 1.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+    .w-head::before{content:"";position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.15) 0%,transparent 70%);pointer-events:none}
+    .w-badge{display:inline-block;background:rgba(255,255,255,.2);color:#fff;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;letter-spacing:.5px;margin-bottom:1.25rem;border:1px solid rgba(255,255,255,.3)}
+    .w-ico{font-size:56px;display:block;margin-bottom:1rem;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(255,255,255,.4))}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .w-title{font-size:22px;font-weight:700;color:#fff;line-height:1.4;margin-bottom:.5rem}
+    .w-title span{background:linear-gradient(90deg,#fff,#D4BBFF);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    .w-sub{font-size:13px;color:rgba(255,255,255,.85);line-height:1.6}
+    .w-body{padding:1.25rem 1.5rem 1.75rem}
+    .info-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1.5rem}
+    .info-row{background:#F3EEFF;border-radius:var(--r-md);padding:.75rem 1rem;display:flex;align-items:center;gap:10px;border:1px solid #DDD0FF}
+    .info-ico{font-size:20px;flex-shrink:0}
+    .info-lbl{font-size:11px;color:#7B52E8;margin-bottom:2px;font-weight:500}
+    .info-txt{font-size:13px;color:#2D1060;font-weight:600}
+
+    /* ── QUESTION ── */
+    .q-topbar{padding:1.25rem 1.25rem .75rem;display:flex;align-items:center;justify-content:space-between}
+    .pill{background:#EDE5FF;color:var(--purple);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid #DDD0FF}
+    .step-lbl{font-size:11px;color:#888}
+    .prog-bar{height:3px;background:#EDE5FF;margin:0 1.25rem .75rem;border-radius:99px;overflow:hidden}
+    .prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--purple2));border-radius:99px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+    .q-body{padding:.75rem 1.25rem 1.75rem}
+    .q-num{font-size:11px;font-weight:700;color:var(--purple);letter-spacing:.8px;margin-bottom:.4rem}
+    .q-txt{font-size:16px;font-weight:700;color:#1a1a2e;line-height:1.5;margin-bottom:.35rem}
+    .q-hint{font-size:12px;color:#666;margin-bottom:1.25rem;line-height:1.5}
+    .opts{display:flex;flex-direction:column;gap:8px}
+    .opt{width:100%;padding:13px 14px;background:#fff;border:1.5px solid #E5E0F5;border-radius:var(--r-lg);font-size:13px;color:#1a1a2e;text-align:left;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:12px;line-height:1.5}
+    .opt:hover{background:#F3EEFF;border-color:#C4AEFF}
+    .opt:active{transform:scale(.98)}
+    .opt.sel{border:2px solid var(--purple);background:#EDE5FF;box-shadow:0 0 0 3px rgba(91,47,212,.08)}
+    .opt-badge{min-width:28px;height:28px;border-radius:50%;background:#F3EEFF;border:1.5px solid #DDD0FF;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;color:var(--purple);transition:all .15s}
+    .opt.sel .opt-badge{background:var(--purple);color:#fff;border-color:var(--purple)}
+    .opt-body{flex:1;display:flex;flex-direction:column}
+    .opt-sub{font-size:11px;color:#888;margin-bottom:2px}
+    .opt.sel .opt-sub{color:var(--purple2)}
+    .opt-main{font-size:13px;font-weight:500;color:#1a1a2e}
+    .opt.sel .opt-main{color:var(--purple)}
+
+    /* ── LOADING ── */
+    .load-wrap{text-align:center;padding:4rem 2rem}
+    .load-ico{font-size:44px;display:block;margin-bottom:1.25rem;animation:spin 1.2s ease-in-out infinite}
+    @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+    .load-title{font-size:16px;font-weight:600;color:#1a1a2e;margin-bottom:.5rem}
+    .load-sub{font-size:13px;color:#666}
+
+    /* ── RESULT ── */
+    .r-head{background:linear-gradient(155deg,#5B2FD4 0%,#7B52E8 100%);padding:1.5rem 1.25rem;display:flex;align-items:center;gap:14px}
+    .r-head-ico{font-size:40px;flex-shrink:0}
+    .r-head-lbl{font-size:11px;color:rgba(255,255,255,.75);margin-bottom:4px}
+    .r-head-title{font-size:18px;font-weight:700;color:#fff;line-height:1.3}
+    .r-head-sub{font-size:12px;color:rgba(255,255,255,.75);margin-top:3px}
+    .r-body{padding:1.25rem}
+    .sec-lbl{font-size:11px;font-weight:700;color:#999;letter-spacing:.8px;margin-bottom:.75rem;text-transform:uppercase}
+    .demo-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:1.25rem}
+    .demo-card{background:#fff;border:1.5px solid #E5E0F5;border-radius:var(--r-lg);padding:1rem;display:flex;gap:12px;align-items:flex-start;transition:all .2s}
+    .demo-card:hover{border-color:#C4AEFF;background:#FAF7FF}
+    .demo-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+    .demo-body{flex:1}
+    .demo-tag{font-size:10px;font-weight:700;color:var(--purple);background:#EDE5FF;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:5px;border:1px solid #DDD0FF}
+    .demo-title{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:3px;line-height:1.35}
+    .demo-desc{font-size:12px;color:#555;line-height:1.55}
+    .demo-ico{font-size:26px;flex-shrink:0}
+
+    /* CTA section */
+    .cta-box{background:#F8F5FF;border-radius:var(--r-lg);padding:1rem;margin-bottom:1rem;border:1px solid #E5E0F5}
+    .cta-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #EEE8FF}
+    .cta-row:last-child{border-bottom:none;padding-bottom:0}
+    .cta-ico{width:32px;height:32px;border-radius:var(--r-md);background:#EDE5FF;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+    .cta-txt{flex:1}
+    .cta-title{font-size:12px;font-weight:600;color:#1a1a2e;margin-bottom:2px}
+    .cta-sub{font-size:11px;color:#666;line-height:1.45}
+    .cta-link{font-size:11px;color:var(--purple);text-decoration:none;display:inline-block;margin-top:3px}
+
+    .btn-row{display:flex;gap:8px}
+    .btn-out{flex:1;padding:12px;background:#fff;border:1.5px solid #DDD0FF;border-radius:var(--r-lg);font-size:13px;color:var(--purple);cursor:pointer;font-weight:600}
+    .btn-out:hover{background:#F3EEFF}
+    .btn-pri{flex:1;padding:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;border-radius:var(--r-lg);font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(91,47,212,.3)}
+    .btn-out:active,.btn-pri:active{opacity:.85;transform:scale(.99)}
+
+    .start-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;border-radius:var(--r-lg);font-size:15px;font-weight:700;cursor:pointer;transition:all .15s;box-shadow:0 4px 20px rgba(91,47,212,.35)}
+    .start-btn:hover{box-shadow:0 6px 28px rgba(91,47,212,.5)}
+    .start-btn:active{opacity:.9;transform:scale(.99)}
+
+    /* Modal — 흰 배경으로 분리해서 가독성 확보 */
+    .overlay{display:none;position:fixed;inset:0;background:rgba(60,20,120,.6);z-index:100;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px)}
+    .overlay.on{display:flex}
+    .modal{background:#fff;border-radius:20px 20px 0 0;padding:1.5rem 1.5rem 2rem;width:100%;max-width:460px;max-height:92vh;overflow-y:auto;animation:slideUp .25s ease}
+    @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .m-badge{display:inline-block;background:#EDE5FF;color:var(--purple);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin-bottom:.9rem}
+    .modal-title{font-size:20px;font-weight:700;color:#1d1d1f;margin-bottom:.5rem}
+    .modal-sub{font-size:13px;color:#666;line-height:1.6;margin-bottom:1.25rem}
+    .m-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+    .m-field{display:flex;flex-direction:column;gap:5px}
+    .m-field.full{grid-column:1/-1}
+    .m-label{font-size:12px;font-weight:600;color:#333}
+    .m-req{color:#e00}
+    .m-input{width:100%;padding:11px 12px;background:#f5f5f7;border:1px solid #e0e0e0;border-radius:var(--r-md);font-size:13px;color:#1d1d1f;outline:none;font-family:var(--font)}
+    .m-input:focus{border-color:var(--purple);background:#fff}
+    .m-input::placeholder{color:#aaa}
+    textarea.m-input{resize:none;min-height:72px}
+    .m-privacy{font-size:11px;color:#888;line-height:1.6;margin:1rem 0}
+    .m-privacy a{color:var(--purple);text-decoration:none}
+    .m-btns{display:flex;gap:8px;margin-top:.25rem}
+    .m-cancel{padding:13px 18px;background:#f5f5f7;border:none;border-radius:var(--r-lg);font-size:13px;font-weight:500;color:#333;cursor:pointer}
+    .m-cancel:hover{background:#ebebeb}
+    .m-submit{flex:1;padding:13px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;border-radius:var(--r-lg);font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(91,47,212,.35)}
+    .m-submit:active{opacity:.85}
+    .m-success{text-align:center;padding:1.5rem;font-size:14px;color:var(--purple);background:#EDE5FF;border-radius:var(--r-md);display:none}
+  </style>
+</head>
+<body>
+<div class="frame">
+
+  <!-- ── WELCOME ── -->
+  <div id="s-welcome" class="scr on">
+    <div class="w-head">
+      <span class="w-badge">SAP Business AI · 딜로이트 Connect 2026</span>
+      <span class="w-ico">🤖</span>
+      <h1 class="w-title">SAP Business AI<br>부스에 오신 것을<br>환영합니다!</h1>
+      <p class="w-sub">3가지 질문으로 맞춤 데모 경로를<br>큐레이션 해드립니다</p>
+    </div>
+    <div class="w-body">
+      <div class="info-list">
+        <div class="info-row">
+          <span class="info-ico">⏱</span>
+          <div><div class="info-lbl">소요 시간</div><div class="info-txt">약 1분 · 3가지 질문</div></div>
+        </div>
+        <div class="info-row">
+          <span class="info-ico">🎯</span>
+          <div><div class="info-lbl">결과</div><div class="info-txt">우리 조직 맞춤 데모 3가지 추천</div></div>
+        </div>
+        <div class="info-row">
+          <span class="info-ico">💡</span>
+          <div><div class="info-lbl">포함 내용</div><div class="info-txt">J4C · Embedded AI · AI Agent</div></div>
+        </div>
+      </div>
+      <button class="start-btn" onclick="startQuiz()">큐레이션 시작하기 →</button>
+      <p style="text-align:center;font-size:11px;color:var(--text2);margin-top:.75rem">어떤 컨텐츠를 살펴볼지 함께 결정해요</p>
+    </div>
+  </div>
+
+  <!-- ── QUESTION ── -->
+  <div id="s-q" class="scr">
+    <div class="q-topbar">
+      <span class="pill">SAP Business AI</span>
+      <span class="step-lbl" id="step-lbl">1 / 3</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="prog"></div></div>
+    <div class="q-body">
+      <p class="q-num" id="q-num">Q1</p>
+      <p class="q-txt" id="q-txt"></p>
+      <p class="q-hint" id="q-hint"></p>
+      <div class="opts" id="q-opts"></div>
+    </div>
+  </div>
+
+  <!-- ── LOADING ── -->
+  <div id="s-loading" class="scr">
+    <div class="load-wrap">
+      <span class="load-ico">⚙️</span>
+      <p class="load-title">맞춤 데모를 큐레이션 중...</p>
+      <p class="load-sub" id="load-txt">SAP AI 시나리오를 분석하고 있습니다</p>
+    </div>
+  </div>
+
+  <!-- ── RESULT ── -->
+  <div id="s-result" class="scr">
+    <div class="r-head">
+      <span class="r-head-ico" id="r-ico">🏢</span>
+      <div>
+        <p class="r-head-lbl">큐레이션 완료</p>
+        <p class="r-head-title" id="r-title">맞춤 데모 경로</p>
+        <p class="r-head-sub" id="r-sub">부스에서 아래 순서로 체험해보세요</p>
+      </div>
+    </div>
+    <div class="r-body">
+      <p class="sec-lbl">📋 추천 데모 순서</p>
+      <div class="demo-cards" id="demo-cards"></div>
+
+      <p class="sec-lbl">🔗 부스 액션</p>
+      <div class="cta-box">
+        <div class="cta-row">
+          <div class="cta-ico">🤖</div>
+          <div class="cta-txt">
+            <div class="cta-title">SAP J4C에게 질문하기</div>
+            <div class="cta-sub">부스 태블릿에서 J4C 데모를 직접 체험하고 자연어로 질문해보세요</div>
+          </div>
+        </div>
+        <div class="cta-row">
+          <div class="cta-ico">🔍</div>
+          <div class="cta-txt">
+            <div class="cta-title">최신 SAP Biz AI Use Case 보기</div>
+            <div class="cta-sub">SAP Discovery Center에서 더 많은 AI 시나리오를 확인하세요</div>
+            <a class="cta-link" href="https://discovery-center.cloud.sap/missionCatalog/?search=AI" target="_blank">Discovery Center ↗</a>
+          </div>
+        </div>
+        <div class="cta-row">
+          <div class="cta-ico">📩</div>
+          <div class="cta-txt">
+            <div class="cta-title">우리 회사 맞춤 Biz AI 상담</div>
+            <div class="cta-sub">연락처를 남기시면 행사 후 맞춤 한글 자료를 보내드립니다</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-out" onclick="retake()">↩ 다시 하기</button>
+        <button class="btn-pri" onclick="openContact()">📩 자료 받기</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Contact Modal -->
+<div class="overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div id="m-form">
+      <span class="m-badge">SAP Business AI</span>
+      <p class="modal-title">맞춤 자료 요청</p>
+      <p class="modal-sub">큐레이션 결과를 바탕으로 맞춤 자료를 보내드립니다.<br>아래 정보를 입력해 주세요.</p>
+      <div class="m-grid">
+        <div class="m-field">
+          <label class="m-label">회사명 <span class="m-req">*</span></label>
+          <input class="m-input" id="m-company" type="text" placeholder="(주)제조기업" />
+        </div>
+        <div class="m-field">
+          <label class="m-label">이름 <span class="m-req">*</span></label>
+          <input class="m-input" id="m-name" type="text" placeholder="홍길동" />
+        </div>
+        <div class="m-field">
+          <label class="m-label">조직명 <span class="m-req">*</span></label>
+          <input class="m-input" id="m-dept" type="text" placeholder="디지털혁신팀" />
+        </div>
+        <div class="m-field">
+          <label class="m-label">직급 <span class="m-req">*</span></label>
+          <input class="m-input" id="m-title" type="text" placeholder="팀장" />
+        </div>
+        <div class="m-field full">
+          <label class="m-label">이메일 <span class="m-req">*</span></label>
+          <input class="m-input" id="m-email" type="email" placeholder="name@company.com" />
+        </div>
+        <div class="m-field full">
+          <label class="m-label">남기고 싶은 메시지</label>
+          <textarea class="m-input" id="m-msg" placeholder="문의 사항이나 궁금한 점을 자유롭게 적어주세요"></textarea>
+        </div>
+      </div>
+      <p class="m-privacy">위에 개인 데이터를 입력하고 제출을 클릭하면 <a href="https://www.sap.com/korea/about/legal/privacy.html" target="_blank">개인정보보호정책</a>에 설명된대로 SAP가 귀하의 데이터를 처리하는 것에 동의하게 됩니다. 여기에 제공해주신 모든 정보는 SAP <a href="https://www.sap.com/korea/about/legal/privacy.html" target="_blank">개인정보보호정책</a>에 따라 사용됩니다.</p>
+      <div class="m-btns">
+        <button class="m-cancel" onclick="document.getElementById('modal').classList.remove('on')">취소</button>
+        <button class="m-submit" onclick="submitContact()">요청 제출하기 →</button>
+      </div>
+    </div>
+    <div class="m-success" id="m-success">✅ 제출 완료! 행사 후 맞춤 자료를 보내드릴게요.</div>
+  </div>
+</div>
+
+<script>
+const Qs = [
+  {
+    num: "Q1",
+    txt: "현재 사용 중이거나 검토 중인 SAP 환경은 무엇인가요?",
+    hint: "SAP 클라우드 전략 및 도입 방식에 관한 질문입니다",
+    opts: [
+      { lbl:"A", sub:"퍼블릭 클라우드",        txt:"RISE with SAP 또는 SAP S/4HANA Cloud Public Edition",  val:0 },
+      { lbl:"B", sub:"프라이빗 / On-Premise",  txt:"SAP S/4HANA Cloud Private Edition 또는 On-Premise",    val:1 },
+      { lbl:"C", sub:"잘 모르겠어요",          txt:"아직 검토 중이거나 결정된 바 없어요",                    val:2 }
+    ]
+  },
+  {
+    num: "Q2",
+    txt: "재무 / FCM 영역에 관심이 있으신가요?",
+    hint: "수납 자동화, 채권 회수, 현금 관리 등 재무 영역입니다",
+    opts: [
+      { lbl:"A", sub:"관심 있어요",  txt:"수납 자동화·채권 회수 AI가 궁금합니다 💰",              val:0 },
+      { lbl:"B", sub:"관심 없어요",  txt:"이번엔 재무 영역보다 다른 주제에 집중하고 싶습니다",     val:1 }
+    ]
+  },
+  {
+    num: "Q3",
+    txt: "물동 / SCM 영역에 관심이 있으신가요?",
+    hint: "구매부터 판매까지, 설계부터 설비 관리, 운송 등 물동 영역입니다",
+    opts: [
+      { lbl:"A", sub:"관심 있어요",  txt:"판매오더 자동화·설비 등 물동 AI Agent가 궁금합니다 🏭", val:0 },
+      { lbl:"B", sub:"관심 없어요",  txt:"이번엔 물동 영역보다 다른 주제에 집중하고 싶습니다",     val:1 }
+    ]
+  }
+];
+
+const loadMsgs = [
+  "SAP AI 시나리오를 분석하고 있습니다",
+  "최적 데모 경로를 탐색 중...",
+  "환경 및 관심사 매칭 중...",
+  "큐레이션 완료!"
+];
+
+let ans = [], cur = 0;
+
+function startQuiz() { ans = []; cur = 0; showScr("s-q"); renderQ(); }
+
+function showScr(id) {
+  document.querySelectorAll(".scr").forEach(s => s.classList.remove("on"));
+  document.getElementById(id).classList.add("on");
+}
+
+function renderQ() {
+  const q = Qs[cur];
+  document.getElementById("prog").style.width = `${(cur + 1) / 3 * 100}%`;
+  document.getElementById("step-lbl").textContent = `${cur + 1} / 3`;
+  document.getElementById("q-num").textContent = q.num;
+  document.getElementById("q-txt").textContent = q.txt;
+  document.getElementById("q-hint").textContent = q.hint;
+  const c = document.getElementById("q-opts");
+  c.innerHTML = "";
+  q.opts.forEach(o => {
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.innerHTML = `<span class="opt-badge">${o.lbl}</span><span class="opt-body"><span class="opt-sub">${o.sub}</span><span class="opt-main">${o.txt}</span></span>`;
+    b.onclick = () => pick(o.val, b);
+    c.appendChild(b);
+  });
+}
+
+function pick(val, btn) {
+  document.querySelectorAll(".opt").forEach(b => b.classList.remove("sel"));
+  btn.classList.add("sel");
+  setTimeout(() => {
+    ans.push(val);
+    if (cur < 2) { cur++; renderQ(); }
+    else { showScr("s-loading"); runLoading(); }
+  }, 300);
+}
+
+let loadTmr;
+function runLoading() {
+  let i = 0;
+  const el = document.getElementById("load-txt");
+  el.textContent = loadMsgs[0];
+  loadTmr = setInterval(() => {
+    i++;
+    if (i < loadMsgs.length) { el.textContent = loadMsgs[i]; }
+    else { clearInterval(loadTmr); buildResult(); showScr("s-result"); }
+  }, 600);
+}
+
+/*
+  결과 로직 (Q2=fscm, Q3=scm 값: 0=관심, 1=관심없음)
+
+  fscm=1, scm=0  → J4C + 판매 오더 자동 생성 AI + 설비 유지보수 계획 Agent
+  fscm=0, scm=1  → J4C + 반제 기표 자동화 AI + 채권 회수 관리 Agent
+  fscm=0, scm=0  → J4C + 수납 자동 매칭 AI + 판매 오더 자동 생성 AI
+  fscm=1, scm=1  → J4C만
+*/
+
+const DEMOS = {
+  j4c: {
+    ico:"🤖", tag:"SAP Joule",
+    title:"Joule for Consultant",
+    desc:"AI 어시스턴트 Joule이 SAP S/4HANA 전반을 안내합니다. 자연어로 질문하면 트랜잭션·문서·프로세스 가이드를 즉시 받아볼 수 있습니다."
+  },
+  salesOrder: {
+    ico:"📦", tag:"S/4HANA Embedded AI · SCM",
+    title:"판매 오더 자동 생성 AI",
+    desc:"이메일·팩스·PDF 등 비정형 문서에서 판매오더를 AI가 자동 추출·등록합니다. 수작업 입력을 최소화하고 처리 속도를 높이는 S/4HANA Embedded AI 시나리오입니다."
+  },
+  maintenance: {
+    ico:"🔩", tag:"AI Agent · SCM",
+    title:"설비 유지보수 계획 Agent",
+    desc:"설비 센서 데이터를 실시간 분석해 고장을 사전 예측하고, PM 오더 생성부터 부품 조달까지 AI Agent가 자율 처리하는 시나리오입니다."
+  },
+  journal: {
+    ico:"📒", tag:"S/4HANA Embedded AI · FCM",
+    title:"반제 기표 자동화 AI",
+    desc:"AI가 회계 데이터를 분석해 반제 기표(Clearing Posting)를 자동 제안·처리합니다. 결산 마감 공수를 줄이는 S/4HANA Embedded AI 주력 시나리오입니다."
+  },
+  arAgent: {
+    ico:"💳", tag:"AI Agent · FCM",
+    title:"채권 회수 관리 Agent",
+    desc:"미수금 우선순위 자동 분류, 독촉 액션 자율 실행, 채권 리스크 예측까지 AI Agent가 AR 회수 프로세스를 자율 처리하는 시나리오입니다."
+  },
+  cashApp: {
+    ico:"💰", tag:"S/4HANA Embedded AI · FCM",
+    title:"수납 자동 매칭 AI",
+    desc:"수납 데이터와 오픈 아이템을 AI가 자동 매칭해 미수금을 처리합니다. SAP Financial Services Network 연계로 현금 관리 효율을 높이는 Embedded AI 데모입니다."
+  }
+};
+
+function buildResult() {
+  const fscm = ans[1]; // 0=관심, 1=상관없음, 2=관심없음
+  const scm  = ans[2]; // 0=관심, 1=상관없음, 2=관심없음
+
+  const envIco  = ["☁️","🏢","🌐"][ans[0]];
+  const envName = ["Public Cloud","Private Cloud","범용"][ans[0]];
+  document.getElementById("r-ico").textContent   = envIco;
+  document.getElementById("r-title").textContent = `${envName} 맞춤 데모`;
+
+  let picks = [DEMOS.j4c];
+
+  if (fscm === 1 && scm === 0) {
+    // 재무 관심없음 + 물동 관심있음
+    picks.push(DEMOS.salesOrder, DEMOS.maintenance);
+  } else if (fscm === 0 && scm === 1) {
+    // 재무 관심있음 + 물동 관심없음
+    picks.push(DEMOS.journal, DEMOS.arAgent);
+  } else if (fscm === 0 && scm === 0) {
+    // 둘 다 관심있음 → 각 영역 주력 1개씩
+    picks.push(DEMOS.cashApp, DEMOS.salesOrder);
+  }
+  // fscm=1, scm=1 → J4C만 (picks 그대로)
+
+  document.getElementById("demo-cards").innerHTML = picks.map((c, i) => `
+    <div class="demo-card">
+      <div class="demo-num">${i + 1}</div>
+      <div class="demo-body">
+        <span class="demo-tag">${c.tag}</span>
+        <div class="demo-title">${c.title}</div>
+        <div class="demo-desc">${c.desc}</div>
+      </div>
+      <span class="demo-ico">${c.ico}</span>
+    </div>`).join("");
+}
+
+function retake() { ans = []; cur = 0; showScr("s-welcome"); }
+
+function openContact() {
+  document.getElementById("modal").classList.add("on");
+  document.getElementById("m-form").style.display = "block";
+  document.getElementById("m-success").style.display = "none";
+}
+function closeModal(e) {
+  if (e.target === document.getElementById("modal"))
+    document.getElementById("modal").classList.remove("on");
+}
+function submitContact() {
+  const name    = document.getElementById("m-name").value.trim();
+  const company = document.getElementById("m-company").value.trim();
+  const dept    = document.getElementById("m-dept").value.trim();
+  const title   = document.getElementById("m-title").value.trim();
+  const email   = document.getElementById("m-email").value.trim();
+  const msg     = document.getElementById("m-msg").value.trim();
+  if (!name || !company || !dept || !title || !email) {
+    alert("필수 항목(*)을 모두 입력해주세요.");
+    return;
+  }
+
+  // 큐레이션 결과 텍스트 수집
+  const resultCards = [...document.querySelectorAll(".demo-title")].map(el => el.textContent).join(" / ");
+
+  const submitBtn = document.querySelector(".m-submit");
+  submitBtn.textContent = "제출 중...";
+  submitBtn.disabled = true;
+
+  fetch("https://script.google.com/macros/s/AKfycbyb5VRowKSs433FKkXB8K5ow3AdsAvwiR7yx4N-otcSe31uOxLADMG24WPQq4a41Wc6/exec", {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, company, dept, title, email, msg, result: resultCards })
+  })
+  .then(() => {
+    document.getElementById("m-form").style.display = "none";
+    document.getElementById("m-success").style.display = "block";
+    setTimeout(() => {
+      document.getElementById("modal").classList.remove("on");
+      submitBtn.textContent = "요청 제출하기 →";
+      submitBtn.disabled = false;
+    }, 2500);
+  })
+  .catch(() => {
+    alert("제출 중 오류가 발생했습니다. 다시 시도해주세요.");
+    submitBtn.textContent = "요청 제출하기 →";
+    submitBtn.disabled = false;
+  });
+}
+</script>
+</body>
+</html>
