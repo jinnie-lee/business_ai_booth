@@ -240,7 +240,7 @@
         </div>
       </div>
 
-      <p class="sec-lbl">📋 추천 데모 순서</p>
+      <p class="sec-lbl">📋 추천 데모</p>
       <div class="demo-cards" id="demo-cards"></div>
 
       <p class="sec-lbl">🔗 더 알아보세요!</p>
@@ -572,9 +572,12 @@ function submitContact() {
   const resultCards = [...document.querySelectorAll(".demo-title")].map(el => el.textContent).join(" / ");
 
   // 질문별 선택 답변 — Qs 배열에서 직접 읽어서 싱크 오류 방지
-  const q1 = Qs[0].opts.find(o => o.val === ans[0])?.sub ?? "-";
-  const q2 = Qs[1].opts.find(o => o.val === ans[1])?.sub ?? "-";
-  const q3 = Qs[2].opts.find(o => o.val === ans[2])?.sub ?? "-";
+  const q1 = Qs[0].opts.find(o => o.val === ans[0])?.txt ?? "-";
+  const q2areas = Array.isArray(ans[1]) ? ans[1] : (ans[1] !== undefined ? [ans[1]] : []);
+  const q2 = q2areas.length > 0
+    ? q2areas.map(v => Qs[1].opts.find(o => o.val === v)?.txt ?? "-").join(", ")
+    : "-";
+  const q3 = Qs[2].opts.find(o => o.val === ans[2])?.txt ?? "-";
 
   const submitBtn = document.querySelector(".m-submit");
   submitBtn.textContent = "제출 중...";
