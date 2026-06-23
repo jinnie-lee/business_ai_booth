@@ -184,7 +184,6 @@
        
       </div>
       <button class="start-btn" onclick="startQuiz()">큐레이션 시작하기 →</button>
-      <p style="text-align:center;font-size:11px;color:var(--text2);margin-top:.75rem">어떤 컨텐츠를 살펴볼지 함께 결정해요.</p>
     </div>
   </div>
 
@@ -200,6 +199,7 @@
       <p class="q-txt" id="q-txt"></p>
       <p class="q-hint" id="q-hint"></p>
       <div class="opts" id="q-opts"></div>
+      <button class="start-btn" id="q-next" style="display:none;margin-top:1rem" onclick="nextQ()">다음 →</button>
     </div>
   </div>
 
@@ -320,7 +320,7 @@ const Qs = [
     num: "Q1",
     txt: "현재 사용 중인 SAP 환경은 무엇인가요?",
     opts: [
-      { lbl:"A", sub:"클라우드",        txt:"S/4HANA Public 클라우드 혹은 Private 클라우드",  val:0 },
+      { lbl:"A", sub:"클라우드",        txt:"S/4HANA Public 혹은 Private 클라우드",  val:0 },
       { lbl:"B", sub:"온프레미스 / ECC",  txt:"S/4HANA 온프레미스 혹은 SAP ERP ECC",    val:1 },
       { lbl:"C", sub:"",          txt:"아직 검토 중이거나 결정된 바 없어요.",                    val:2 }
     ]
@@ -328,6 +328,8 @@ const Qs = [
   {
     num: "Q2",
     txt: "관심 있는 영역을 선택해주세요.",
+    hint: "복수 선택 가능합니다.",
+    multi: true,
     opts: [
       { lbl:"A", sub:"가장 최신 기술이 궁금해요",             txt:"Joule & AI Agent",              val:0 },
       { lbl:"B", sub:"바로 쓸 수 있는 AI가 궁금해요",         txt:"Embedded AI & Custom AI",       val:1 },
@@ -352,9 +354,9 @@ const loadMsgs = [
   "큐레이션 완료!"
 ];
 
-let ans = [], cur = 0;
+let ans = [], cur = 0, q2sel = new Set();
 
-function startQuiz() { ans = []; cur = 0; showScr("s-q"); renderQ(); }
+function startQuiz() { ans = []; cur = 0; q2sel = new Set(); showScr("s-q"); renderQ(); }
 
 function showScr(id) {
   document.querySelectorAll(".scr").forEach(s => s.classList.remove("on"));
@@ -363,37 +365,70 @@ function showScr(id) {
 
 function renderQ() {
   const q = Qs[cur];
-  // Q2=c 선택 후 Q3가 생략되는 경우 총 스텝이 달라지므로 진행률을 위치 기반으로 계산
+  const isMulti = !!q.multi;
   const totalSteps = 3;
   document.getElementById("prog").style.width = `${(cur + 1) / totalSteps * 100}%`;
   document.getElementById("step-lbl").textContent = `${cur + 1} / ${totalSteps}`;
   document.getElementById("q-num").textContent = q.num;
   document.getElementById("q-txt").textContent = q.txt;
   document.getElementById("q-hint").textContent = q.hint || "";
+  document.getElementById("q-next").style.display = isMulti ? "block" : "none";
   const c = document.getElementById("q-opts");
   c.innerHTML = "";
   q.opts.forEach(o => {
     const b = document.createElement("button");
     b.className = "opt";
     b.innerHTML = `<span class="opt-badge">${o.lbl}</span><span class="opt-body"><span class="opt-sub">${o.sub}</span><span class="opt-main">${o.txt}</span></span>`;
-    b.onclick = () => pick(o.val, b);
+    if (isMulti) {
+      b.onclick = () => toggleQ2(o.val, b);
+    } else {
+      b.onclick = () => pick(o.val, b);
+    }
     c.appendChild(b);
   });
+}
+
+function toggleQ2(val, btn) {
+  if (q2sel.has(val)) {
+    q2sel.delete(val);
+    btn.classList.remove("sel");
+  } else {
+    q2sel.add(val);
+    btn.classList.add("sel");
+  }
+  document.getElementById("q-next").style.display = q2sel.size > 0 ? "block" : "none";
+  // C만 선택 시 버튼 텍스트 변경
+  if (q2sel.size === 1 && q2sel.has(2)) {
+    document.getElementById("q-next").textContent = "결과 보기 →";
+  } else {
+    document.getElementById("q-next").textContent = "다음 →";
+  }
+}
+
+function nextQ() {
+  // Q2 복수선택 확정
+  ans[1] = Array.from(q2sel); // 배열로 저장
+  // C만 선택 시 Q3 건너뜀
+  if (q2sel.size === 1 && q2sel.has(2)) {
+    document.getElementById("prog").style.width = "100%";
+    document.getElementById("step-lbl").textContent = "완료";
+    showScr("s-loading"); runLoading(); return;
+  }
+  cur = 2; renderQ();
 }
 
 function pick(val, btn) {
   document.querySelectorAll(".opt").forEach(b => b.classList.remove("sel"));
   btn.classList.add("sel");
   setTimeout(() => {
-    ans.push(val);
-    // Q2=c(val=2) 선택 시 Q3 없이 바로 결과로
-    if (cur === 1 && val === 2) {
-      document.getElementById("prog").style.width = "100%";
-      document.getElementById("step-lbl").textContent = "완료";
-      showScr("s-loading"); runLoading(); return;
+    if (cur === 0) {
+      ans[0] = val;
+      cur = 1; renderQ();
+    } else {
+      // Q3
+      ans[2] = val;
+      showScr("s-loading"); runLoading();
     }
-    if (cur < 2) { cur++; renderQ(); }
-    else { showScr("s-loading"); runLoading(); }
   }, 300);
 }
 
@@ -449,42 +484,45 @@ const DEMOS = {
 
 /*
   분기 로직
-  area = ans[1]: 0=Joule&Agent, 1=Embedded AI, 2=J4C only
-  biz  = ans[2]: 0=FCM, 1=SCM, 2=Both, undefined=J4C only (Q3 건너뜀)
+  areas = ans[1]: 선택값 배열 (예: [0], [1], [0,1], [2], [0,2] 등)
+  biz   = ans[2]: 0=FCM, 1=SCM, 2=Both, undefined=J4C only
 */
 
 function buildResult() {
-  const area = ans[1]; // 0=Agent, 1=Embedded, 2=J4C
-  const biz  = ans[2]; // 0=FCM, 1=SCM, 2=Both, undefined
+  const areas = Array.isArray(ans[1]) ? ans[1] : [ans[1]];
+  const biz   = ans[2]; // 0=FCM, 1=SCM, 2=Both, undefined
 
   const envIco  = ["☁️","🏢","🌐"][ans[0]] || "🏢";
-  const envName = ["Public Cloud","Private Cloud","범용"][ans[0]] || "범용";
   document.getElementById("r-ico").textContent   = envIco;
-  document.getElementById("r-title").textContent = `${envName} 맞춤 데모`;
+  document.getElementById("r-title").textContent = `맞춤 데모`;
 
-  let picks = [DEMOS.j4c];
+  const hasAgent    = areas.includes(0);
+  const hasEmbedded = areas.includes(1);
+  const hasJ4C      = areas.includes(2);
+  // J4C만 선택하거나 Q3 없음
+  const j4cOnly = (hasJ4C && !hasAgent && !hasEmbedded) || biz === undefined;
+
+  let picks = hasJ4C ? [DEMOS.j4c] : [];
   let ctaBizMsg = "";
 
-  if (area === 2 || biz === undefined) {
+  if (j4cOnly) {
     ctaBizMsg = "";
-  } else if (area === 0 && biz === 0) {
-    picks.push(DEMOS.arAgent);
-    ctaBizMsg = "반제 기표 자동화, 채권 회수 관리, 수납 자동 매칭과 같이 재무 영역에 해당하는 AI 시나리오를 부스에서 확인해보세요.";
-  } else if (area === 0 && biz === 1) {
-    picks.push(DEMOS.maintenance);
-    ctaBizMsg = "설계부터 구매, 수요 계획, 생산, 판매, 운송, 설비 관리까지 전 물동 영역을 아우르는 AI 데모를 부스에서 확인해보세요.";
-  } else if (area === 0 && biz === 2) {
-    picks.push(DEMOS.arAgent, DEMOS.maintenance);
-    ctaBizMsg = "부스에서 베스트 AI 케이스를 소개해 드리겠습니다.";
-  } else if (area === 1 && biz === 0) {
-    picks.push(DEMOS.journal, DEMOS.cashApp);
-    ctaBizMsg = "반제 기표 자동화, 채권 회수 관리, 수납 자동 매칭과 같이 재무 영역에 해당하는 AI 시나리오를 부스에서 확인해보세요.";
-  } else if (area === 1 && biz === 1) {
-    picks.push(DEMOS.salesOrder, DEMOS.newProduct);
-    ctaBizMsg = "설계부터 구매, 수요 계획, 생산, 판매, 운송, 설비 관리까지 전 물동 영역을 아우르는 AI 데모를 부스에서 확인해보세요.";
-  } else if (area === 1 && biz === 2) {
-    picks.push(DEMOS.cashApp, DEMOS.salesOrder);
-    ctaBizMsg = "부스에서 베스트 AI 케이스를 소개해 드리겠습니다.";
+  } else {
+    if (biz === 0) { // FCM
+      if (hasAgent)    picks.push(DEMOS.arAgent);
+      if (hasEmbedded) picks.push(DEMOS.journal, DEMOS.cashApp);
+      ctaBizMsg = "재무 영역 AI 시나리오를 부스에서 확인해보세요.";
+    } else if (biz === 1) { // SCM
+      if (hasAgent)    picks.push(DEMOS.maintenance);
+      if (hasEmbedded) picks.push(DEMOS.salesOrder, DEMOS.newProduct);
+      ctaBizMsg = "전 물동 영역을 아우르는 AI 데모를 부스에서 확인해보세요.";
+    } else if (biz === 2) { // Both
+      if (hasAgent)    picks.push(DEMOS.arAgent, DEMOS.maintenance);
+      if (hasEmbedded) picks.push(DEMOS.cashApp, DEMOS.salesOrder);
+      ctaBizMsg = "부스에서 베스트 AI 케이스를 소개해 드리겠습니다.";
+    }
+    // 중복 제거 (j4c는 이미 첫 항목으로 고정)
+    picks = picks.filter((v, i, a) => a.indexOf(v) === i);
   }
 
   document.getElementById("demo-cards").innerHTML = picks.map((c, i) => `
@@ -507,7 +545,7 @@ function buildResult() {
   }
 }
 
-function retake() { ans = []; cur = 0; showScr("s-welcome"); }
+function retake() { ans = []; cur = 0; q2sel = new Set(); showScr("s-welcome"); }
 
 function openContact() {
   document.getElementById("modal").classList.add("on");
