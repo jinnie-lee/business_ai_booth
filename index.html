@@ -168,10 +168,7 @@
     </div>
     <div class="w-body">
       <div class="info-list">
-        <div class="info-row">
-          <span class="info-ico">⏱</span>
-          <div><div class="info-lbl">소요 시간</div><div class="info-txt">약 1분 · 3가지 질문</div></div>
-        </div>
+        
          <div class="info-row">
           <span class="info-ico">💡</span>
           <div><div class="info-lbl">포함 내용</div><div class="info-txt">J4C · Embedded AI · AI Agent</div></div>
@@ -179,6 +176,10 @@
         <div class="info-row">
           <span class="info-ico">🎯</span>
           <div><div class="info-lbl">결과</div><div class="info-txt">우리 조직 맞춤 데모 3가지 추천</div></div>
+        </div>
+        <div class="info-row">
+          <span class="info-ico">⏱</span>
+          <div><div class="info-lbl">체험형 부스</div><div class="info-txt">부스에 오셔서, Joule for Consultant를 직접 경험해보세요!</div></div>
         </div>
        
       </div>
@@ -222,18 +223,28 @@
       </div>
     </div>
     <div class="r-body">
-      <p class="sec-lbl">📋 추천 데모 순서</p>
-      <div class="demo-cards" id="demo-cards"></div>
-
-      <p class="sec-lbl">🔗 부스 액션</p>
-      <div class="cta-box">
+      <div class="cta-box" style="margin-bottom:1.25rem">
+        <div class="cta-row" id="cta-biz-msg">
+          <div class="cta-ico">💡</div>
+          <div class="cta-txt">
+            <div class="cta-title">맞춤 시나리오 안내</div>
+            <div class="cta-sub"></div>
+          </div>
+        </div>
         <div class="cta-row">
           <div class="cta-ico">🤖</div>
           <div class="cta-txt">
-            <div class="cta-title">SAP J4C에게 질문하기</div>
+            <div class="cta-title">지금 바로 부스에서 Joule for Consultant를 체험해보세요!</div>
             <div class="cta-sub">부스 태블릿에서 J4C 데모를 직접 체험하고 자연어로 질문해보세요.</div>
           </div>
         </div>
+      </div>
+
+      <p class="sec-lbl">📋 추천 데모 순서</p>
+      <div class="demo-cards" id="demo-cards"></div>
+
+      <p class="sec-lbl">🔗 더 알아보세요!</p>
+      <div class="cta-box">
         <div class="cta-row">
           <div class="cta-ico">🔍</div>
           <div class="cta-txt">
@@ -246,7 +257,7 @@
           <div class="cta-ico">📩</div>
           <div class="cta-txt">
             <div class="cta-title">우리 회사 맞춤 Biz AI 상담</div>
-            <div class="cta-sub">연락처를 남기시면 행사 후 맞춤 한글 자료를 보내드립니다.</div>
+            <div class="cta-sub">연락처를 남기시면 행사 후 한글 자료와 함께 상담을 제공해드립니다.</div>
           </div>
         </div>
       </div>
@@ -265,8 +276,8 @@
   <div class="modal">
     <div id="m-form">
       <span class="m-badge">SAP Business AI</span>
-      <p class="modal-title">맞춤 자료 요청</p>
-      <p class="modal-sub">큐레이션 결과를 바탕으로 맞춤 자료를 보내드립니다.<br>아래 정보를 입력해 주세요.</p>
+      <p class="modal-title">한국어 자료 요청</p>
+      <p class="modal-sub">맞춤 상담과 함께 부스에서 활용된 자료를 보내드립니다.<br>아래 정보를 입력해 주세요.</p>
       <div class="m-grid">
         <div class="m-field">
           <label class="m-label">회사명 <span class="m-req">*</span></label>
@@ -307,27 +318,29 @@
 const Qs = [
   {
     num: "Q1",
-    txt: "현재 사용 중이거나 검토 중인 SAP 환경은 무엇인가요?",
+    txt: "현재 사용 중인 SAP 환경은 무엇인가요?",
     opts: [
-      { lbl:"A", sub:"퍼블릭 클라우드",        txt:"RISE with SAP 또는 SAP S/4HANA Cloud Public Edition",  val:0 },
-      { lbl:"B", sub:"프라이빗 / On-Premise",  txt:"SAP S/4HANA Cloud Private Edition 또는 On-Premise",    val:1 },
-      { lbl:"C", sub:"잘 모르겠어요",          txt:"아직 검토 중이거나 결정된 바 없어요.",                    val:2 }
+      { lbl:"A", sub:"클라우드",        txt:"S/4HANA Public 클라우드 혹은 Private 클라우드",  val:0 },
+      { lbl:"B", sub:"온프레미스 / ECC",  txt:"S/4HANA 온프레미스 혹은 SAP ERP ECC",    val:1 },
+      { lbl:"C", sub:"",          txt:"아직 검토 중이거나 결정된 바 없어요.",                    val:2 }
     ]
   },
   {
     num: "Q2",
-    txt: "FCM 영역에 관심이 있으신가요?",
+    txt: "관심 있는 영역을 선택해주세요.",
     opts: [
-      { lbl:"A", sub:"관심 있어요",  txt:"수납 자동화·채권 회수 AI가 궁금합니다. 💰",              val:0 },
-      { lbl:"B", sub:"관심 없어요",  txt:"이번엔 재무 영역보다 다른 주제에 집중하고 싶습니다.",     val:1 }
+      { lbl:"A", sub:"가장 최신 기술이 궁금해요",             txt:"Joule & AI Agent",              val:0 },
+      { lbl:"B", sub:"바로 쓸 수 있는 AI가 궁금해요",         txt:"Embedded AI & Custom AI",       val:1 },
+      { lbl:"C", sub:"구축/운영 관점에서 사용 가능한 AI가 궁금해요", txt:"Joule for Consultant",     val:2 }
     ]
   },
   {
     num: "Q3",
-    txt: "SCM 영역에 관심이 있으신가요?",
+    txt: "관심 있는 비즈니스 시나리오를 선택해주세요.",
     opts: [
-      { lbl:"A", sub:"관심 있어요",  txt:"판매오더 자동화·설비 등 물동 AI Agent가 궁금합니다. 🏭", val:0 },
-      { lbl:"B", sub:"관심 없어요",  txt:"이번엔 물동 영역보다 다른 주제에 집중하고 싶습니다.",     val:1 }
+      { lbl:"A", sub:"재무 영역",   txt:"FCM 영역 시나리오가 궁금합니다. 💰",                       val:0 },
+      { lbl:"B", sub:"물동 영역",   txt:"SCM 영역 시나리오가 궁금합니다. 🏭",                       val:1 },
+      { lbl:"C", sub:"둘 다 궁금해요", txt:"두 영역 모두 베스트 시나리오가 궁금합니다. ✨",           val:2 }
     ]
   }
 ];
@@ -350,11 +363,13 @@ function showScr(id) {
 
 function renderQ() {
   const q = Qs[cur];
-  document.getElementById("prog").style.width = `${(cur + 1) / 3 * 100}%`;
-  document.getElementById("step-lbl").textContent = `${cur + 1} / 3`;
+  // Q2=c 선택 후 Q3가 생략되는 경우 총 스텝이 달라지므로 진행률을 위치 기반으로 계산
+  const totalSteps = 3;
+  document.getElementById("prog").style.width = `${(cur + 1) / totalSteps * 100}%`;
+  document.getElementById("step-lbl").textContent = `${cur + 1} / ${totalSteps}`;
   document.getElementById("q-num").textContent = q.num;
   document.getElementById("q-txt").textContent = q.txt;
-  document.getElementById("q-hint").textContent = q.hint;
+  document.getElementById("q-hint").textContent = q.hint || "";
   const c = document.getElementById("q-opts");
   c.innerHTML = "";
   q.opts.forEach(o => {
@@ -371,6 +386,12 @@ function pick(val, btn) {
   btn.classList.add("sel");
   setTimeout(() => {
     ans.push(val);
+    // Q2=c(val=2) 선택 시 Q3 없이 바로 결과로
+    if (cur === 1 && val === 2) {
+      document.getElementById("prog").style.width = "100%";
+      document.getElementById("step-lbl").textContent = "완료";
+      showScr("s-loading"); runLoading(); return;
+    }
     if (cur < 2) { cur++; renderQ(); }
     else { showScr("s-loading"); runLoading(); }
   }, 300);
@@ -388,70 +409,78 @@ function runLoading() {
   }, 600);
 }
 
-/*
-  결과 로직 (Q2=fscm, Q3=scm 값: 0=관심, 1=관심없음)
-
-  fscm=1, scm=0  → J4C + 판매 오더 자동 생성 AI + 설비 유지보수 계획 Agent
-  fscm=0, scm=1  → J4C + 반제 기표 자동화 AI + 채권 회수 관리 Agent
-  fscm=0, scm=0  → J4C + 수납 자동 매칭 AI + 판매 오더 자동 생성 AI
-  fscm=1, scm=1  → J4C만
-*/
-
 const DEMOS = {
   j4c: {
     ico:"🤖", tag:"SAP Joule",
     title:"Joule for Consultant",
-    desc:"AI 어시스턴트 Joule이 SAP S/4HANA 전반을 안내합니다. 자연어로 질문하면 트랜잭션·문서·프로세스 가이드를 즉시 받아볼 수 있습니다."
+    desc:"부스에서 직접 J4C에게 자연어로 질의해보세요! "
   },
   salesOrder: {
     ico:"📦", tag:"S/4HANA Embedded AI · SCM",
     title:"판매 오더 자동 생성 AI",
-    desc:"이메일·팩스·PDF 등 비정형 문서에서 판매오더를 AI가 자동 추출·등록합니다. 수작업 입력을 최소화하고 처리 속도를 높이는 S/4HANA Embedded AI 시나리오입니다."
+    desc:"부스에서 데모를 확인해보세요!"
   },
   maintenance: {
     ico:"🔩", tag:"AI Agent · SCM",
     title:"설비 유지보수 계획 Agent",
-    desc:"설비 센서 데이터를 실시간 분석해 고장을 사전 예측하고, PM 오더 생성부터 부품 조달까지 AI Agent가 자율 처리하는 시나리오입니다."
+    desc:"부스에서 데모를 확인해보세요!"
   },
   journal: {
     ico:"📒", tag:"S/4HANA Embedded AI · FCM",
     title:"반제 기표 자동화 AI",
-    desc:"AI가 회계 데이터를 분석해 반제 기표(Clearing Posting)를 자동 제안·처리합니다. 결산 마감 공수를 줄이는 S/4HANA Embedded AI 주력 시나리오입니다."
+    desc:"부스에서 데모를 확인해보세요!"
   },
   arAgent: {
     ico:"💳", tag:"AI Agent · FCM",
-    title:"채권 회수 관리 Agent",
-    desc:"미수금 우선순위 자동 분류, 독촉 액션 자율 실행, 채권 리스크 예측까지 AI Agent가 AR 회수 프로세스를 자율 처리하는 시나리오입니다."
+    title:"채권 관리 Agent",
+    desc:"부스에서 데모를 확인해보세요!"
   },
   cashApp: {
-    ico:"💰", tag:"S/4HANA Embedded AI · FCM",
+    ico:"💰", tag:"S/4HANA  Custom · FCM",
     title:"수납 자동 매칭 AI",
-    desc:"수납 데이터와 오픈 아이템을 AI가 자동 매칭해 미수금을 처리합니다. SAP Financial Services Network 연계로 현금 관리 효율을 높이는 Embedded AI 데모입니다."
+    desc:"부스에서 데모를 확인해보세요!"
   }
 };
 
-function buildResult() {
-  const fscm = ans[1]; // 0=관심, 1=상관없음, 2=관심없음
-  const scm  = ans[2]; // 0=관심, 1=상관없음, 2=관심없음
+/*
+  분기 로직
+  area = ans[1]: 0=Joule&Agent, 1=Embedded AI, 2=J4C only
+  biz  = ans[2]: 0=FCM, 1=SCM, 2=Both, undefined=J4C only (Q3 건너뜀)
+*/
 
-  const envIco  = ["☁️","🏢","🌐"][ans[0]];
-  const envName = ["Public Cloud","Private Cloud","범용"][ans[0]];
+function buildResult() {
+  const area = ans[1]; // 0=Agent, 1=Embedded, 2=J4C
+  const biz  = ans[2]; // 0=FCM, 1=SCM, 2=Both, undefined
+
+  const envIco  = ["☁️","🏢","🌐"][ans[0]] || "🏢";
+  const envName = ["Public Cloud","Private Cloud","범용"][ans[0]] || "범용";
   document.getElementById("r-ico").textContent   = envIco;
   document.getElementById("r-title").textContent = `${envName} 맞춤 데모`;
 
   let picks = [DEMOS.j4c];
+  let ctaBizMsg = "";
 
-  if (fscm === 1 && scm === 0) {
-    // 재무 관심없음 + 물동 관심있음
+  if (area === 2 || biz === undefined) {
+    ctaBizMsg = "";
+  } else if (area === 0 && biz === 0) {
+    picks.push(DEMOS.arAgent, DEMOS.cashApp);
+    ctaBizMsg = "반제 기표 자동화, 채권 회수 관리, 수납 자동 매칭과 같이 재무 영역에 해당하는 AI 시나리오를 부스에서 확인해보세요.";
+  } else if (area === 0 && biz === 1) {
+    picks.push(DEMOS.maintenance, DEMOS.salesOrder);
+    ctaBizMsg = "설계부터 구매, 수요 계획, 생산, 판매, 운송, 설비 관리까지 전 물동 영역을 아우르는 AI 데모를 부스에서 확인해보세요.";
+  } else if (area === 0 && biz === 2) {
+    picks.push(DEMOS.arAgent, DEMOS.maintenance);
+    ctaBizMsg = "부스에서 베스트 AI 케이스를 소개해 드리겠습니다.";
+  } else if (area === 1 && biz === 0) {
+    picks.push(DEMOS.journal, DEMOS.cashApp);
+    ctaBizMsg = "반제 기표 자동화, 채권 회수 관리, 수납 자동 매칭과 같이 재무 영역에 해당하는 AI 시나리오를 부스에서 확인해보세요.";
+  } else if (area === 1 && biz === 1) {
     picks.push(DEMOS.salesOrder, DEMOS.maintenance);
-  } else if (fscm === 0 && scm === 1) {
-    // 재무 관심있음 + 물동 관심없음
-    picks.push(DEMOS.journal, DEMOS.arAgent);
-  } else if (fscm === 0 && scm === 0) {
-    // 둘 다 관심있음 → 각 영역 주력 1개씩
+    ctaBizMsg = "설계부터 구매, 수요 계획, 생산, 판매, 운송, 설비 관리까지 전 물동 영역을 아우르는 AI 데모를 부스에서 확인해보세요.";
+  } else if (area === 1 && biz === 2) {
     picks.push(DEMOS.cashApp, DEMOS.salesOrder);
+    ctaBizMsg = "부스에서 베스트 AI 케이스를 소개해 드리겠습니다.";
   }
-  // fscm=1, scm=1 → J4C만 (picks 그대로)
 
   document.getElementById("demo-cards").innerHTML = picks.map((c, i) => `
     <div class="demo-card">
@@ -459,10 +488,17 @@ function buildResult() {
       <div class="demo-body">
         <span class="demo-tag">${c.tag}</span>
         <div class="demo-title">${c.title}</div>
-        <div class="demo-desc">${c.desc}</div>
       </div>
       <span class="demo-ico">${c.ico}</span>
     </div>`).join("");
+
+  const bizRow = document.getElementById("cta-biz-msg");
+  if (ctaBizMsg) {
+    bizRow.style.display = "";
+    bizRow.querySelector(".cta-sub").textContent = ctaBizMsg;
+  } else {
+    bizRow.style.display = "none";
+  }
 }
 
 function retake() { ans = []; cur = 0; showScr("s-welcome"); }
@@ -491,10 +527,7 @@ function submitContact() {
   // 큐레이션 결과 텍스트 수집
   const resultCards = [...document.querySelectorAll(".demo-title")].map(el => el.textContent).join(" / ");
 
-  // 질문별 선택 답변 텍스트 변환
-  const envLabels = ["Public Cloud (RISE with SAP)", "Private Cloud / On-Premise", "잘 모르겠어요"];
-  const fcmLabels = ["관심 있어요", "관심 없어요"];
-  const scmLabels = ["관심 있어요", "관심 없어요"];
+  // 질문별 선택 답변 — Qs 배열에서 직접 읽어서 싱크 오류 방지
   const q1 = Qs[0].opts.find(o => o.val === ans[0])?.sub ?? "-";
   const q2 = Qs[1].opts.find(o => o.val === ans[1])?.sub ?? "-";
   const q3 = Qs[2].opts.find(o => o.val === ans[2])?.sub ?? "-";
